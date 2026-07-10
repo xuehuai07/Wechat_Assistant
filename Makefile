@@ -1,4 +1,4 @@
-.PHONY: backend-dev frontend-dev test lint bootstrap
+.PHONY: backend-dev frontend-dev test lint bootstrap docker-build docker-up docker-down docker-verify
 
 bootstrap:
 	export PATH="/usr/local/opt/node@22/bin:/opt/homebrew/opt/node@22/bin:$$PATH"; \
@@ -21,3 +21,15 @@ test:
 lint:
 	PYTHONPATH=backend .venv/bin/ruff check backend
 	export PATH="/usr/local/opt/node@22/bin:/opt/homebrew/opt/node@22/bin:$$PATH"; cd frontend && npm run typecheck
+
+docker-build:
+	docker compose build
+
+docker-up:
+	docker compose up -d
+
+docker-down:
+	docker compose down
+
+docker-verify:
+	scripts/verify-docker.sh

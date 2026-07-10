@@ -29,7 +29,6 @@
 暂未启用：
 
 - 高德 Web 服务查询（天气、POI、地理编码与路线详情需要 Key）；
-- Docker/云端部署；
 - 语音、图片、文件、群聊、多用户、支付、下单、终端、浏览器、插件。
 
 ## 本机启动
@@ -127,6 +126,32 @@ scripts/launchd-agent.sh uninstall
 ```
 
 生成的 plist 位于 `~/Library/LaunchAgents/`，运行日志位于 `runtime/logs/launchd.stdout.log` 与 `runtime/logs/launchd.stderr.log`。安装脚本不会把环境变量或密钥写入 plist，凭证和运行时数据也不会在卸载时删除。
+
+## Docker 与云端部署
+
+Docker 镜像固定使用 Python 3.12.13、Node 22.23.1 和 `requirements.lock` 中锁定的运行依赖；前端在构建阶段编译，最终镜像以非 root 用户运行。`.dockerignore` 会排除 `.env`、`config.json`、本机 `runtime/` 和 `profile.local.json`，因此它们不会进入镜像层。
+
+本机容器运行前，先准备本地 `.env` 和 `config.json`：
+
+```bash
+docker compose build
+docker compose up -d
+docker compose ps
+```
+
+Compose 只发布 `127.0.0.1:6500`，并将容器的运行数据保存到命名卷 `wechat-assistant-runtime`。不要以端口映射、反向代理或防火墙规则把该服务直接公开到互联网。
+
+云端应使用全新仓库副本和一个空的 `wechat-assistant-runtime` 卷，然后在云端控制台重新扫码登录。绝不能复制、上传或挂载本机 `runtime/wechat_credentials.json`。需要从本机访问云端实例时，使用 SSH 隧道：
+
+```bash
+ssh -L 6500:127.0.0.1:6500 your-user@your-server
+```
+
+Docker 可用时，运行以下命令完成 Compose 配置、镜像构建和基础启动校验：
+
+```bash
+make docker-verify
+```
 
 ## 测试
 

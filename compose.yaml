@@ -1,0 +1,36 @@
+name: wechat-assistant
+
+services:
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: wechat-assistant:0.1.0
+    env_file:
+      - .env
+    ports:
+      - target: 6500
+        published: "6500"
+        host_ip: 127.0.0.1
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: ./config.json
+        target: /app/config.json
+        read_only: true
+      - type: volume
+        source: agent-runtime
+        target: /app/runtime
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+volumes:
+  agent-runtime:
+    name: wechat-assistant-runtime
