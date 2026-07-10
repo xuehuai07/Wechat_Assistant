@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="360" viewBox="0 0 980 360" role="img" aria-labelledby="title desc">
+  <title id="title">Docker 启动流程</title>
+  <desc id="desc">准备 env 和 config，构建镜像，启动 compose，访问本机控制台，运行数据进入 Docker 卷。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <rect width="980" height="360" rx="22" fill="#f8fafc"/>
+  <text x="48" y="58" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="27" font-weight="700" fill="#0f172a">Docker 快速启动</text>
+  <text x="48" y="88" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="14" fill="#64748b">本地配置不进入镜像层，运行数据保存在命名卷 wechat-assistant-runtime</text>
+
+  <g>
+    <rect x="48" y="132" width="160" height="108" rx="14" fill="#e0f2fe" stroke="#38bdf8" stroke-width="2"/>
+    <text x="128" y="168" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="17" font-weight="700" fill="#075985">1. 准备配置</text>
+    <text x="128" y="198" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#0369a1">.env</text>
+    <text x="128" y="220" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#0369a1">config.json</text>
+  </g>
+  <line x1="216" y1="186" x2="286" y2="186" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="296" y="132" width="160" height="108" rx="14" fill="#dcfce7" stroke="#22c55e" stroke-width="2"/>
+    <text x="376" y="168" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="17" font-weight="700" fill="#166534">2. 构建镜像</text>
+    <text x="376" y="198" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#15803d">docker compose</text>
+    <text x="376" y="220" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#15803d">build</text>
+  </g>
+  <line x1="464" y1="186" x2="534" y2="186" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="544" y="132" width="160" height="108" rx="14" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+    <text x="624" y="168" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="17" font-weight="700" fill="#92400e">3. 启动服务</text>
+    <text x="624" y="198" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#a16207">docker compose</text>
+    <text x="624" y="220" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#a16207">up -d</text>
+  </g>
+  <line x1="712" y1="186" x2="782" y2="186" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="792" y="132" width="140" height="108" rx="14" fill="#fce7f3" stroke="#f472b6" stroke-width="2"/>
+    <text x="862" y="168" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="17" font-weight="700" fill="#9d174d">4. 访问控制台</text>
+    <text x="862" y="198" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#be185d">127.0.0.1</text>
+    <text x="862" y="220" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#be185d">:6500</text>
+  </g>
+
+  <rect x="268" y="278" width="444" height="42" rx="21" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="490" y="305" text-anchor="middle" font-family="Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="14" fill="#475569">运行数据：SQLite、日志、微信凭证保存到 Docker volume</text>
+</svg>
