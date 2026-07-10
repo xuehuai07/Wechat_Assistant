@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 
-const API = "http://127.0.0.1:9899";
+const API = "http://127.0.0.1:6500";
 
 async function request(path: string, token: string, options: RequestInit = {}) {
   const response = await fetch(`${API}${path}`, {

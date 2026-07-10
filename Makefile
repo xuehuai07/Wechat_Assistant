@@ -10,7 +10,7 @@ bootstrap:
 	test -f .env || cp .env.example .env
 
 backend-dev:
-	PYTHONPATH=backend .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 9899 --reload
+	PYTHONPATH=backend .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 6500 --reload
 
 frontend-dev:
 	export PATH="/usr/local/opt/node@22/bin:/opt/homebrew/opt/node@22/bin:$$PATH"; cd frontend && npm run dev

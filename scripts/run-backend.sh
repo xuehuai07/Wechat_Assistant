@@ -28,4 +28,4 @@ if [[ -z "${WEB_PASSWORD:-}" ]]; then
 fi
 
 export PYTHONPATH="$ROOT/backend"
-exec .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 9899
+exec .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 6500

@@ -183,7 +183,7 @@ scripts/run-backend.sh
 打开：
 
 ```text
-http://127.0.0.1:9899/healthz
+http://127.0.0.1:6500/healthz
 ```
 
 如果只跑前端开发服务：
@@ -195,7 +195,7 @@ make frontend-dev
 控制台：
 
 ```text
-http://127.0.0.1:5173
+http://127.0.0.1:5500
 ```
 
 ### Step 3：验证 Web 聊天
