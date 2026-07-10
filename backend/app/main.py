@@ -15,6 +15,7 @@ from .maps.service import AmapWebServiceProvider, MapService
 from .security import SessionStore
 from .services.deepseek import DeepSeekClient
 from .services.weather import OpenMeteoWeatherService
+from .tools.builtin import MapNavigationTool, WeatherForecastTool
 from .tools.policy import ToolRegistry
 from .wechat.service import WechatService
 
@@ -24,10 +25,12 @@ def create_app() -> FastAPI:
     configure_logging(settings)
     db = Database(settings.storage.sqlite_path)
     db.initialize()
-    tools = ToolRegistry(settings.agent.tool_allowlist)
     maps = MapService(settings.profile.path, AmapWebServiceProvider(settings.amap_maps_api_key))
     deepseek = DeepSeekClient(settings)
     weather = OpenMeteoWeatherService()
+    tools = ToolRegistry(settings.agent.tool_allowlist)
+    tools.register(WeatherForecastTool(weather, enabled=settings.agent.weather_enabled))
+    tools.register(MapNavigationTool(maps))
     agent = ChatAgent(settings, db, deepseek, tools, weather)
     wechat = WechatService(settings, agent)
 

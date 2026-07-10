@@ -6,7 +6,9 @@ import pytest
 from app.agent.chat_agent import ChatAgent
 from app.config import load_settings
 from app.db import Database
+from app.services.deepseek import ModelReply, ToolCall
 from app.services.weather import LocationNotFoundError, OpenMeteoWeatherService, parse_weather_request
+from app.tools.builtin import WeatherForecastTool
 from app.tools.policy import ToolRegistry
 
 
@@ -105,3 +107,45 @@ async def test_agent_uses_weather_service_for_explicit_weather_request(tmp_path)
     result = await agent.run("web:test", "上海今天天气")
 
     assert "来源：Open-Meteo" in result.reply
+
+
+@pytest.mark.asyncio
+async def test_agent_executes_weather_tool_call_and_finishes_with_model_reply(tmp_path):
+    class ToolCallingModel:
+        def __init__(self):
+            self.calls = []
+
+        async def chat(self, messages, tools=None):
+            self.calls.append((messages, tools))
+            if len(self.calls) == 1:
+                assert tools and tools[0]["function"]["name"] == "weather.get_forecast"
+                return ModelReply(
+                    content="",
+                    tool_calls=[
+                        ToolCall(
+                            id="call_weather",
+                            name="weather.get_forecast",
+                            arguments={"location": "上海", "day_offset": 1},
+                        )
+                    ],
+                )
+            assert messages[-1]["role"] == "tool"
+            assert "Open-Meteo" in messages[-1]["content"]
+            return ModelReply(content="上海明天有小雨，建议带伞。")
+
+    settings = load_settings(validate=True)
+    db = Database(tmp_path / "agent.sqlite3")
+    db.initialize()
+    weather = OpenMeteoWeatherService(transport=httpx.MockTransport(weather_transport))
+    tools = ToolRegistry(["weather.get_forecast"])
+    tools.register(WeatherForecastTool(weather))
+    model = ToolCallingModel()
+    agent = ChatAgent(settings, db, model, tools, weather)
+
+    result = await agent.run("web:test", "上海明天天气怎么样")
+
+    assert result.reply == "上海明天有小雨，建议带伞。"
+    assert len(model.calls) == 2
+    stored = db.list_messages("web:test")
+    assert [message["role"] for message in stored] == ["user", "tool", "assistant"]
+    assert '"tool": "weather.get_forecast"' in stored[1]["content"]

@@ -218,6 +218,28 @@ runtime/wechat_credentials.json
 | `profile.path` | `./profile.local.json` | 本地点别名配置路径 |
 | `logging.path` | `./runtime/logs/app.log` | 应用日志路径 |
 
+### Agent 工具白名单
+
+默认 `agent.tool_allowlist` 为空，模型不能调用任何外部工具。需要让 Agent 通过模型 tool call 主动调用内置能力时，可显式加入：
+
+```json
+{
+  "agent": {
+    "tool_allowlist": [
+      "weather.get_forecast",
+      "maps.create_navigation_url"
+    ]
+  }
+}
+```
+
+当前内置工具：
+
+| 工具名 | 说明 |
+| --- | --- |
+| `weather.get_forecast` | 查询明确城市或地点的实时天气与 0-6 天短期预报 |
+| `maps.create_navigation_url` | 根据 `profile.local.json` 中已保存的地点别名生成高德导航 URL |
+
 ## 地点别名与导航
 
 复制示例文件：
