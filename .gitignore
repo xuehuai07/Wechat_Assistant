@@ -1,6 +1,7 @@
 .DS_Store
 .env
 config.json
+profile.local.json
 .venv/
 __pycache__/
 *.py[cod]

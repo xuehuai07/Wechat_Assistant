@@ -9,8 +9,10 @@ from .api.routes import router
 from .config import PROJECT_ROOT, load_settings
 from .db import Database
 from .logging_config import configure_logging
+from .maps.service import AmapWebServiceProvider, MapService
 from .security import SessionStore
 from .services.deepseek import DeepSeekClient
+from .services.weather import OpenMeteoWeatherService
 from .tools.policy import ToolRegistry
 from .wechat.service import WechatService
 
@@ -21,14 +23,18 @@ def create_app() -> FastAPI:
     db = Database(settings.storage.sqlite_path)
     db.initialize()
     tools = ToolRegistry(settings.agent.tool_allowlist)
+    maps = MapService(settings.profile.path, AmapWebServiceProvider(settings.amap_maps_api_key))
     deepseek = DeepSeekClient(settings)
-    agent = ChatAgent(settings, db, deepseek, tools)
+    weather = OpenMeteoWeatherService()
+    agent = ChatAgent(settings, db, deepseek, tools, weather)
     wechat = WechatService(settings, agent)
 
     app = FastAPI(title="Private WeChat Agent")
     app.state.settings = settings
     app.state.db = db
     app.state.tools = tools
+    app.state.maps = maps
+    app.state.weather = weather
     app.state.agent = agent
     app.state.wechat = wechat
     app.state.sessions = SessionStore()

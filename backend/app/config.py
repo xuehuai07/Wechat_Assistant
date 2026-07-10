@@ -50,6 +50,7 @@ class AgentConfig:
     max_context_turns: int = 20
     max_steps: int = 6
     tool_allowlist: list[str] = field(default_factory=list)
+    weather_enabled: bool = True
 
 
 @dataclass(frozen=True)
@@ -72,6 +73,11 @@ class LoggingConfig:
 
 
 @dataclass(frozen=True)
+class ProfileConfig:
+    path: Path
+
+
+@dataclass(frozen=True)
 class Settings:
     channel: str
     model: ModelConfig
@@ -80,6 +86,7 @@ class Settings:
     wechat: WechatConfig
     storage: StorageConfig
     logging: LoggingConfig
+    profile: ProfileConfig
     deepseek_api_key: str
     web_password: str
     amap_maps_api_key: str = ""
@@ -108,6 +115,7 @@ class Settings:
                 "max_context_turns": self.agent.max_context_turns,
                 "max_steps": self.agent.max_steps,
                 "tool_allowlist": self.agent.tool_allowlist,
+                "weather_enabled": self.agent.weather_enabled,
             },
             "wechat": {
                 "base_url": self.wechat.base_url,
@@ -139,6 +147,7 @@ def load_settings(config_path: str | Path | None = None, *, validate: bool = Tru
         ),
         storage=StorageConfig(sqlite_path=_resolve_path(data["storage"]["sqlite_path"])),
         logging=LoggingConfig(path=_resolve_path(data.get("logging", {}).get("path", "./runtime/logs/app.log"))),
+        profile=ProfileConfig(path=_resolve_path(data.get("profile", {}).get("path", "./profile.local.json"))),
         deepseek_api_key=os.environ.get("DEEPSEEK_API_KEY", "").strip(),
         web_password=os.environ.get("WEB_PASSWORD", "").strip(),
         amap_maps_api_key=os.environ.get("AMAP_MAPS_API_KEY", "").strip(),

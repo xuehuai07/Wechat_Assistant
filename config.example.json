@@ -14,7 +14,8 @@
   "agent": {
     "max_context_turns": 20,
     "max_steps": 6,
-    "tool_allowlist": []
+    "tool_allowlist": [],
+    "weather_enabled": true
   },
   "wechat": {
     "base_url": "https://ilinkai.weixin.qq.com",
@@ -25,6 +26,9 @@
   },
   "storage": {
     "sqlite_path": "./runtime/agent.sqlite3"
+  },
+  "profile": {
+    "path": "./profile.local.json"
   },
   "logging": {
     "path": "./runtime/logs/app.log"

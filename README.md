@@ -21,12 +21,14 @@
 - iLink 微信二维码、扫码轮询、长轮询、文本回复适配层；
 - Web 控制台密码登录；
 - 工具 allowlist 注册层与执行层；
+- 无 Key 的本地点别名与高德 URI 导航链接；
+- 无 Key 的 Open-Meteo 实时天气和短期预报；
 - 日志脱敏；
 - 单元测试。
 
 暂未启用：
 
-- 高德地图工具；
+- 高德 Web 服务查询（天气、POI、地理编码与路线详情需要 Key）；
 - macOS `launchd` 常驻；
 - Docker/云端部署；
 - 语音、图片、文件、群聊、多用户、支付、下单、终端、浏览器、插件。
@@ -91,6 +93,22 @@ runtime/wechat_credentials.json
 ```
 
 该目录被 `.gitignore` 忽略，不应提交。
+
+## 地点别名与导航
+
+复制 `profile.local.example.json` 为 `profile.local.json`，再填入你自己的地点名称和经纬度。该文件已被 Git 忽略，不能提交。
+
+在登录后的控制台会话中，可调用受鉴权保护的 `POST /api/maps/navigation`：`destination` 和可选的 `origin` 必须是已保存的地点别名。接口只生成确定性的高德导航 URL，不查询外部服务，也不需要 Key。省略 `origin` 时，移动端高德可使用设备当前位置。
+
+`GET /api/maps/status` 可查看本地地点配置和地图能力状态。未填写 `AMAP_MAPS_API_KEY` 时，POI、地址解析和路线详情保持禁用，系统不会猜测地点或请求第三方服务。
+
+拿到高德 Web 服务 Key 后，只在本机 `.env` 中填写 `AMAP_MAPS_API_KEY`；不要提交该值。
+
+## 天气查询（无需高德 Key）
+
+发送明确城市的天气问题，例如“上海明天天气怎么样”，Agent 会调用 Open-Meteo 的公开地理编码和预报服务，回复数据时间和来源。也可在登录后调用 `GET /api/weather?location=上海&day_offset=0`。
+
+天气服务开关位于 `config.json` 的 `agent.weather_enabled`，默认启用。天气查询需要网络连接；地点不明确、无法找到地点或服务临时失败时，Agent 会说明原因而不会猜测结果。
 
 ## 测试
 
