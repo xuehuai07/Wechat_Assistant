@@ -40,9 +40,9 @@
 
 ## Phase 5：macOS 常驻
 
-- 增加 `launchd` plist 模板。
-- 日志进入 `runtime/logs/`。
-- 断网后轮询自动恢复。
+- [x] 增加 `launchd` plist 模板和显式安装/卸载脚本。
+- [x] 日志进入 `runtime/logs/`。
+- [x] 凭证恢复后自动启动微信轮询；轮询断网后继续重试。
 
 ## Phase 6：Docker 与云端
 

@@ -29,7 +29,6 @@
 暂未启用：
 
 - 高德 Web 服务查询（天气、POI、地理编码与路线详情需要 Key）；
-- macOS `launchd` 常驻；
 - Docker/云端部署；
 - 语音、图片、文件、群聊、多用户、支付、下单、终端、浏览器、插件。
 
@@ -109,6 +108,25 @@ runtime/wechat_credentials.json
 发送明确城市的天气问题，例如“上海明天天气怎么样”，Agent 会调用 Open-Meteo 的公开地理编码和预报服务，回复数据时间和来源。也可在登录后调用 `GET /api/weather?location=上海&day_offset=0`。
 
 天气服务开关位于 `config.json` 的 `agent.weather_enabled`，默认启用。天气查询需要网络连接；地点不明确、无法找到地点或服务临时失败时，Agent 会说明原因而不会猜测结果。
+
+## macOS 常驻运行
+
+项目提供当前 macOS 用户范围的 LaunchAgent 模板。它只启动后端并绑定 `127.0.0.1:6500`；已有微信凭证时，后端启动后会自动恢复微信轮询。前端如需由后端提供，请先执行一次 `cd frontend && npm run build`。
+
+确认 `.env`、`.venv` 和 `config.json` 都已准备完成后，显式执行：
+
+```bash
+scripts/launchd-agent.sh install
+```
+
+查看状态或移除常驻服务：
+
+```bash
+scripts/launchd-agent.sh status
+scripts/launchd-agent.sh uninstall
+```
+
+生成的 plist 位于 `~/Library/LaunchAgents/`，运行日志位于 `runtime/logs/launchd.stdout.log` 与 `runtime/logs/launchd.stderr.log`。安装脚本不会把环境变量或密钥写入 plist，凭证和运行时数据也不会在卸载时删除。
 
 ## 测试
 

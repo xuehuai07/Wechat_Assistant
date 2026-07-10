@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -29,7 +31,14 @@ def create_app() -> FastAPI:
     agent = ChatAgent(settings, db, deepseek, tools, weather)
     wechat = WechatService(settings, agent)
 
-    app = FastAPI(title="Private WeChat Agent")
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        if wechat.status()["login_status"] == "logged_in":
+            await wechat.start_polling()
+        yield
+        await wechat.stop_polling()
+
+    app = FastAPI(title="Private WeChat Agent", lifespan=lifespan)
     app.state.settings = settings
     app.state.db = db
     app.state.tools = tools
