@@ -36,6 +36,14 @@ body,
   margin: 0;
 }
 
+@supports (height: 100dvh) {
+  html,
+  body,
+  #root {
+    height: 100dvh;
+  }
+}
+
 body {
   min-width: 320px;
   overflow: hidden;
@@ -498,10 +506,10 @@ textarea:focus-visible {
   max-width: 760px;
   margin: 0;
   color: #333842;
-  font-size: clamp(32px, 4vw, 50px);
+  font-size: clamp(30px, 3.4vw, 44px);
   font-weight: 390;
-  letter-spacing: -0.045em;
-  line-height: 1.18;
+  letter-spacing: 0;
+  line-height: 1.22;
 }
 
 .empty-stage .welcome-state {
@@ -511,9 +519,62 @@ textarea:focus-visible {
 
 .empty-stage .composer-wrap {
   position: static;
-  padding: 56px 24px 14px;
+  padding: 36px 24px 14px;
   background: transparent;
   backdrop-filter: none;
+}
+
+.welcome-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  width: min(860px, calc(100vw - 64px));
+  margin-top: 34px;
+}
+
+.welcome-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 13px;
+  color: #4f5662;
+  font-size: 12px;
+  font-weight: 650;
+  background: #ffffff;
+  border: 1px solid #dfe5ee;
+  border-radius: 12px;
+  box-shadow: 0 5px 18px rgba(31, 43, 70, 0.05);
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.welcome-action:hover {
+  color: #155fcb;
+  border-color: #b9cff2;
+  box-shadow: 0 8px 24px rgba(31, 43, 70, 0.08);
+  transform: translateY(-1px);
+}
+
+.welcome-action.primary {
+  color: #0f6844;
+  background: #f1fbf5;
+  border-color: #cbeed9;
+}
+
+.welcome-action svg {
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+}
+
+.welcome-action span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .center-state {
@@ -683,6 +744,7 @@ textarea:focus-visible {
   min-width: 0;
   min-height: 44px;
   max-height: 150px;
+  overflow-y: hidden;
   padding: 11px 4px 6px;
   resize: none;
   color: #252932;
@@ -1422,12 +1484,15 @@ textarea:focus-visible {
   }
 
   .status-pill {
+    flex: 0 0 36px;
     width: 36px;
+    height: 36px;
     min-height: 36px;
     padding: 0;
     justify-content: center;
     overflow: hidden;
     color: transparent;
+    font-size: 0;
   }
 
   .status-pill .status-dot {
@@ -1443,15 +1508,29 @@ textarea:focus-visible {
   }
 
   .empty-stage .composer-wrap {
-    padding: 40px 10px 9px;
+    padding: 26px 10px 9px;
   }
 
   .welcome-state h1 {
-    font-size: 31px;
-    line-height: 1.2;
+    max-width: 330px;
+    font-size: 28px;
+    line-height: 1.24;
   }
 
   .welcome-kicker {
+    font-size: 11px;
+  }
+
+  .welcome-actions {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    margin-top: 26px;
+    padding: 0 12px;
+  }
+
+  .welcome-action {
+    min-height: 42px;
+    padding: 0 10px;
     font-size: 11px;
   }
 

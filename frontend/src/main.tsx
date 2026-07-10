@@ -29,10 +29,21 @@ import QRCode from "qrcode";
 
 import "./styles.css";
 
-const API = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:6500";
+const configuredApiBase = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "");
+const API = configuredApiBase || (import.meta.env.DEV ? "http://127.0.0.1:6500" : "");
+
+function apiUrl(path: string): string {
+  return `${API}${path}`;
+}
 
 type Role = "system" | "user" | "assistant" | "tool";
 type ToolPanel = "wechat" | "status" | "logs";
+
+const quickPrompts = [
+  "上海明天天气怎么样",
+  "帮我整理今天的待办",
+  "写一段微信回复",
+];
 
 interface Message {
   id: number;
@@ -80,7 +91,7 @@ class ApiError extends Error {
 }
 
 async function request<T>(path: string, token: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API}${path}`, {
+  const response = await fetch(apiUrl(path), {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -179,6 +190,7 @@ function App() {
   const [qrPhase, setQrPhase] = useState("");
   const [wechatBusy, setWechatBusy] = useState(false);
   const threadEndRef = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
 
   const webConversations = useMemo(
     () => conversations.filter((conversation) => conversation.source === "web" || conversation.id.startsWith("web:")),
@@ -204,7 +216,7 @@ function App() {
   }
 
   async function login(password: string) {
-    const response = await fetch(`${API}/api/login`, {
+    const response = await fetch(apiUrl("/api/login"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
@@ -269,6 +281,7 @@ function App() {
     setMessage("");
     setActivePanel(null);
     setSidebarOpen(false);
+    requestAnimationFrame(() => composerRef.current?.focus());
   }
 
   async function sendChat() {
@@ -341,6 +354,12 @@ function App() {
     setSidebarOpen(false);
   }
 
+  function useQuickPrompt(prompt: string) {
+    setMessage(prompt);
+    setActivePanel(null);
+    requestAnimationFrame(() => composerRef.current?.focus());
+  }
+
   useEffect(() => {
     if (!token) return;
     void refreshAll(true);
@@ -351,6 +370,15 @@ function App() {
   useEffect(() => {
     threadEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, sending]);
+
+  useEffect(() => {
+    const composer = composerRef.current;
+    if (!composer) return;
+    composer.style.height = "auto";
+    const nextHeight = Math.min(composer.scrollHeight, 150);
+    composer.style.height = `${nextHeight}px`;
+    composer.style.overflowY = composer.scrollHeight > 150 ? "auto" : "hidden";
+  }, [message]);
 
   useEffect(() => {
     if (!qrValue) {
@@ -520,6 +548,18 @@ function App() {
               </div>
               <p className="welcome-kicker">你的本地私人助手</p>
               <h1>今天需要我为你做些什么？</h1>
+              <div className="welcome-actions" aria-label="常用动作">
+                <button className="welcome-action primary" onClick={() => openPanel("wechat")}>
+                  <WechatLogo aria-hidden="true" />
+                  <span>{wechat?.polling ? "微信在线" : wechat?.has_token ? "启动微信轮询" : "微信扫码登录"}</span>
+                </button>
+                {quickPrompts.map((prompt) => (
+                  <button key={prompt} className="welcome-action" onClick={() => useQuickPrompt(prompt)}>
+                    <Sparkle aria-hidden="true" />
+                    <span>{prompt}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             <div className="message-thread" aria-live="polite">
@@ -561,6 +601,7 @@ function App() {
                 <Plus aria-hidden="true" />
               </button>
               <textarea
+                ref={composerRef}
                 rows={1}
                 value={message}
                 placeholder="问问你的私人助手"

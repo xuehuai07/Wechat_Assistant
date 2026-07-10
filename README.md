@@ -198,6 +198,7 @@ runtime/wechat_credentials.json
 | `DEEPSEEK_API_KEY` | 是 | DeepSeek API Key |
 | `WEB_PASSWORD` | 是 | 控制台登录密码 |
 | `AMAP_MAPS_API_KEY` | 否 | 高德 Web 服务 Key，留空时相关外部查询禁用 |
+| `APP_SERVE_FRONTEND` | 否 | 设为 `1` 时由后端托管 `frontend/dist`；Docker Compose 会自动设置 |
 
 ### `config.json`
 
@@ -356,6 +357,8 @@ http://127.0.0.1:6500
 
 Docker 模式下前端已经被构建进镜像，由后端直接提供。
 
+生产构建中的前端默认使用同源 API，也就是页面从哪里打开，API 就请求同一个来源下的 `/api/...`。因此通过 SSH 隧道访问时不需要额外改前端地址。
+
 ### 本机开发时应该打开哪个地址？
 
 打开前端开发服务：
@@ -365,6 +368,12 @@ http://127.0.0.1:5500
 ```
 
 后端地址 `http://127.0.0.1:6500` 只作为 API 服务使用。这样可以避免 5500 和 6500 同时显示两套看起来一样、但构建来源不同的界面。
+
+开发模式下前端默认请求 `http://127.0.0.1:6500`。如果后端不在这个地址，可在 `frontend/.env.local` 中覆盖：
+
+```text
+VITE_API_BASE_URL=http://127.0.0.1:6500
+```
 
 ### 为什么地图导航接口提示 profile 未配置？
 
