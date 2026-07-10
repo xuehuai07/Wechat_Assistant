@@ -20,6 +20,7 @@ def test_compose_keeps_the_web_service_on_loopback_and_runtime_in_a_named_volume
     compose = (root / "compose.yaml").read_text(encoding="utf-8")
 
     assert "host_ip: 127.0.0.1" in compose
+    assert 'APP_SERVE_FRONTEND: "1"' in compose
     assert "target: /app/runtime" in compose
     assert "name: wechat-assistant-runtime" in compose
     assert "read_only: true" in compose

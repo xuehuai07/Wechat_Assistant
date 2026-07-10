@@ -11,7 +11,8 @@ FROM python:3.12.13-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app/backend
+    PYTHONPATH=/app/backend \
+    APP_SERVE_FRONTEND=1
 
 WORKDIR /app
 RUN groupadd --gid 10001 agent \

@@ -43,6 +43,7 @@ class WebConfig:
     host: str
     port: int
     session_secret: str
+    serve_frontend: bool = False
 
 
 @dataclass(frozen=True)
@@ -110,7 +111,7 @@ class Settings:
                 "model": self.model.model,
                 "base_url": self.model.base_url,
             },
-            "web": {"host": self.web.host, "port": self.web.port},
+            "web": {"host": self.web.host, "port": self.web.port, "serve_frontend": self.web.serve_frontend},
             "agent": {
                 "max_context_turns": self.agent.max_context_turns,
                 "max_steps": self.agent.max_steps,
@@ -133,10 +134,14 @@ def load_settings(config_path: str | Path | None = None, *, validate: bool = Tru
         path = PROJECT_ROOT / "config.example.json"
     data = json.loads(path.read_text(encoding="utf-8"))
 
+    web_data = dict(data["web"])
+    if os.environ.get("APP_SERVE_FRONTEND"):
+        web_data["serve_frontend"] = os.environ["APP_SERVE_FRONTEND"].strip().lower() in {"1", "true", "yes", "on"}
+
     settings = Settings(
         channel=data.get("channel", "weixin_ilink"),
         model=ModelConfig(**data["model"]),
-        web=WebConfig(**data["web"]),
+        web=WebConfig(**web_data),
         agent=AgentConfig(**data.get("agent", {})),
         wechat=WechatConfig(
             base_url=data["wechat"]["base_url"],

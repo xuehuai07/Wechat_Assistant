@@ -9,7 +9,8 @@
   "web": {
     "host": "127.0.0.1",
     "port": 6500,
-    "session_secret": "change-me-local-only"
+    "session_secret": "change-me-local-only",
+    "serve_frontend": false
   },
   "agent": {
     "max_context_turns": 20,

@@ -58,7 +58,7 @@ def create_app() -> FastAPI:
     app.include_router(router)
 
     dist = PROJECT_ROOT / "frontend" / "dist"
-    if dist.exists():
+    if settings.web.serve_frontend and dist.exists():
         app.mount("/", StaticFiles(directory=dist, html=True), name="frontend")
     return app
 

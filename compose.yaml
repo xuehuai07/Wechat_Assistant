@@ -8,6 +8,8 @@ services:
     image: wechat-assistant:0.1.0
     env_file:
       - .env
+    environment:
+      APP_SERVE_FRONTEND: "1"
     ports:
       - target: 6500
         published: "6500"

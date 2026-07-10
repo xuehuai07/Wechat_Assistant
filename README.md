@@ -61,6 +61,14 @@
 
 如果你已经安装好 Docker，推荐先走这条路径。容器会构建前端静态资源并启动后端，控制台由后端直接提供。
 
+日常扫码登录和正常使用只需要打开：
+
+```text
+http://127.0.0.1:6500
+```
+
+`5500` 只用于前端开发热更新；不改控制台界面时可以忽略。
+
 ![Docker 启动流程](docs/images/docker-flow.svg)
 
 ### 1. 准备配置
@@ -113,6 +121,8 @@ make docker-verify
 ## 本机开发启动
 
 本机开发模式会分别启动后端和前端开发服务，适合改代码时使用。
+
+这种模式下，`5500` 是你看的控制台页面，`6500` 是前端调用的 API 服务。
 
 ### 1. 初始化环境
 
@@ -199,6 +209,7 @@ runtime/wechat_credentials.json
 | `model.model` | `deepseek-v4-flash` | DeepSeek 模型名 |
 | `web.host` | `127.0.0.1` | Web 监听地址，当前强制本机私有使用 |
 | `web.port` | `6500` | 后端端口 |
+| `web.serve_frontend` | `false` | 是否由后端托管 `frontend/dist` |
 | `agent.tool_allowlist` | `[]` | Agent 可调用工具白名单 |
 | `agent.weather_enabled` | `true` | 是否启用天气查询 |
 | `wechat.credentials_path` | `./runtime/wechat_credentials.json` | 微信登录凭证路径 |
@@ -256,6 +267,12 @@ GET /api/weather?location=上海&day_offset=0
 
 ```bash
 cd frontend && npm run build
+```
+
+然后在 `.env` 中开启：
+
+```text
+APP_SERVE_FRONTEND=1
 ```
 
 确认 `.env`、`.venv` 和 `config.json` 都已准备完成后，显式执行：
@@ -338,6 +355,16 @@ http://127.0.0.1:6500
 ```
 
 Docker 模式下前端已经被构建进镜像，由后端直接提供。
+
+### 本机开发时应该打开哪个地址？
+
+打开前端开发服务：
+
+```text
+http://127.0.0.1:5500
+```
+
+后端地址 `http://127.0.0.1:6500` 只作为 API 服务使用。这样可以避免 5500 和 6500 同时显示两套看起来一样、但构建来源不同的界面。
 
 ### 为什么地图导航接口提示 profile 未配置？
 
