@@ -504,30 +504,16 @@ textarea:focus-visible {
   line-height: 1.18;
 }
 
-.prompt-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 9px;
-  margin-top: 30px;
+.empty-stage .welcome-state {
+  flex: 0 0 auto;
+  padding: clamp(128px, 22.9vh, 206px) 24px 0;
 }
 
-.prompt-suggestions button {
-  min-height: 38px;
-  padding: 0 15px;
-  color: #576173;
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid #e0e5ee;
-  border-radius: 19px;
-  cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
-}
-
-.prompt-suggestions button:hover {
-  background: #ffffff;
-  border-color: #cdd9eb;
-  transform: translateY(-1px);
+.empty-stage .composer-wrap {
+  position: static;
+  padding: 56px 24px 14px;
+  background: transparent;
+  backdrop-filter: none;
 }
 
 .center-state {
@@ -1452,6 +1438,14 @@ textarea:focus-visible {
     padding: 30px 22px 155px;
   }
 
+  .empty-stage .welcome-state {
+    padding: clamp(104px, 19vh, 160px) 22px 0;
+  }
+
+  .empty-stage .composer-wrap {
+    padding: 40px 10px 9px;
+  }
+
   .welcome-state h1 {
     font-size: 31px;
     line-height: 1.2;
@@ -1459,15 +1453,6 @@ textarea:focus-visible {
 
   .welcome-kicker {
     font-size: 11px;
-  }
-
-  .prompt-suggestions {
-    display: grid;
-    width: min(300px, 100%);
-  }
-
-  .prompt-suggestions button {
-    width: 100%;
   }
 
   .message-thread {

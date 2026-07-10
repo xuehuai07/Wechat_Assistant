@@ -507,7 +507,7 @@ function App() {
           </div>
         </header>
 
-        <section className={messages.length ? "chat-stage has-messages" : "chat-stage"}>
+        <section className={messages.length ? "chat-stage has-messages" : "chat-stage empty-stage"}>
           {loading && messages.length === 0 ? (
             <div className="center-state">
               <SpinnerGap className="spin loading-mark" aria-hidden="true" />
@@ -520,11 +520,6 @@ function App() {
               </div>
               <p className="welcome-kicker">你的本地私人助手</p>
               <h1>今天需要我为你做些什么？</h1>
-              <div className="prompt-suggestions" aria-label="快捷提示">
-                <button onClick={() => setMessage("帮我整理一下今天最重要的三件事")}>整理今日重点</button>
-                <button onClick={() => setMessage("帮我把这段想法整理成清晰的行动计划")}>生成行动计划</button>
-                <button onClick={() => openPanel("wechat")}>检查微信连接</button>
-              </div>
             </div>
           ) : (
             <div className="message-thread" aria-live="polite">

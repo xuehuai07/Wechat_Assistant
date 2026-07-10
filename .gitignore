@@ -10,6 +10,7 @@ __pycache__/
 .ruff_cache/
 node_modules/
 frontend/dist/
+artifacts/visual-qa/
 runtime/
 *.sqlite3
 *.db
