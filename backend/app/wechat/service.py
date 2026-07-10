@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 class WechatRuntimeState:
     login_status: str = "idle"
     polling: bool = False
+    qr_code: str = ""
     qr_url: str = ""
     last_error: str = ""
     received_count: int = 0
@@ -69,24 +70,41 @@ class WechatService:
     async def request_qr(self) -> dict[str, Any]:
         client = ILinkClient(self.settings.wechat.base_url, timeout=self.settings.wechat.long_poll_timeout_seconds)
         data = await client.fetch_qr_code()
-        qrcode = data.get("qrcode") or data.get("qrcode_url") or data.get("url") or ""
-        self.state.qr_url = qrcode
+        qr_code = str(data.get("qrcode") or "")
+        qr_url = str(data.get("qrcode_img_content") or data.get("qrcode_url") or data.get("url") or "")
+        if not qr_code:
+            raise RuntimeError("iLink QR response is missing qrcode")
+        if not qr_url:
+            raise RuntimeError("iLink QR response is missing qrcode_img_content")
+        self.state.qr_code = qr_code
+        self.state.qr_url = qr_url
         self.state.login_status = "waiting_scan"
-        return {"qr_url": qrcode, "raw": data}
+        self.state.last_error = ""
+        return {"status": self.state.login_status, "qr_url": qr_url}
 
     async def poll_qr_once(self) -> dict[str, Any]:
-        if not self.state.qr_url:
+        if not self.state.qr_code:
             raise RuntimeError("QR code has not been requested")
         client = ILinkClient(self.settings.wechat.base_url, timeout=self.settings.wechat.long_poll_timeout_seconds)
-        data = await client.poll_qr_status(self.state.qr_url)
+        data = await client.poll_qr_status(self.state.qr_code)
+        qr_status = str(data.get("status") or "wait")
         token = data.get("token") or data.get("bot_token") or data.get("access_token")
         if token:
-            self._client = ILinkClient(self.settings.wechat.base_url, token=token, timeout=self.settings.wechat.long_poll_timeout_seconds)
+            base_url = str(data.get("baseurl") or data.get("base_url") or self.settings.wechat.base_url)
+            self._client = ILinkClient(base_url, token=str(token), timeout=self.settings.wechat.long_poll_timeout_seconds)
             self.state.login_status = "logged_in"
+            self.state.qr_code = ""
+            self.state.qr_url = ""
+            self.state.last_error = ""
             self._persist()
-        elif data.get("status") in {"scanned", "confirmed"}:
-            self.state.login_status = str(data["status"])
-        return {"status": self.state.login_status, "raw": data}
+        elif qr_status in {"scaned", "scanned"}:
+            self.state.login_status = "scanned"
+        elif qr_status == "expired":
+            self.state.login_status = "expired"
+        elif qr_status == "confirmed":
+            self.state.last_error = "iLink login confirmed without bot token"
+            raise RuntimeError(self.state.last_error)
+        return {"status": self.state.login_status, "has_token": bool(self._client and self._client.token)}
 
     async def start_polling(self) -> None:
         if self._task and not self._task.done():
